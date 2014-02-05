@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Androsign</string>
+    <string name="urlHint">Server Url</string>
+    <string name="next">Next</string>
+    <string name="refresh">Refresh</string>
+    <string name="placeHolder">empty</string>
+    <string name="contentDesc">desc</string>
+    <string name="strClock">DigitalClock</string>
+
+</resources>

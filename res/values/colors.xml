@@ -1,0 +1,8 @@
+<resources>
+    <color name="black_overlay">#66000000</color>
+    <color name="sage_grey">#6b645e</color>
+	<color name="sage_gold" >#fdaf17</color>
+	<color name="sage_orange" >#f68026</color>
+	<color name="sage_green" >#006e51</color>
+	<color name="sage_blue" >#003368</color>
+</resources>
