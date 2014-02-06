@@ -25,9 +25,9 @@ public class Weather {
 
 		+ "Condition: " + conditiontext + "\n"
 
-		+ "Temperature: " + windChill + "°F\n" + "Wind direction: "
-				+ windDirection + "°\n" + "Wind speed: " + windSpeed
-				+ " mph\n\n";
+		+ "Temperature: " + windChill + (char) 0x00B0 + "F\n"
+				+ "Wind direction: " + windDirection + (char) 0x00B0 + "\n"
+				+ "Wind speed: " + windSpeed + " mph\n\n";
 
 	}
 }
