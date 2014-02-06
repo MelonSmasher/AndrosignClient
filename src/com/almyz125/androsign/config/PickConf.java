@@ -226,7 +226,7 @@ public class PickConf extends Activity implements OnClickListener {
 				Intent i = new Intent(mContext, Display.class);
 				i.putExtra("CONF", selectedConf);
 				i.putExtra("URL", lastIntent.getStringExtra("url"));
-				zipCode = "03060";
+				//zipCode = "03060"; test zip
 				if (zipCode != null) {
 					System.out.println(zipCode);
 					i.putExtra("ZIP", zipCode);
