@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -18,14 +19,18 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.Document;
@@ -439,11 +444,14 @@ public class Display extends Activity {
 	private News parseNews(Document srcDoc) {
 		News myNews = new News();
 		int i = 0;
-		System.out.println(String.valueOf("Debug: Number of Headlines is " + srcDoc.getElementsByTagName("title").getLength() + "."));
+		System.out.println(String.valueOf("Debug: Number of Headlines is "
+				+ srcDoc.getElementsByTagName("title").getLength() + "."));
 		myNews.headline = "\t\t\t\t";
 		// Iterate over titles and get total number and display that many.
 		while (i < srcDoc.getElementsByTagName("title").getLength()) {
-			myNews.headline = myNews.headline + srcDoc.getElementsByTagName("title").item(i).getTextContent() + "\t\t\t\t";
+			myNews.headline = myNews.headline
+					+ srcDoc.getElementsByTagName("title").item(i)
+							.getTextContent() + "\t\t\t\t";
 			i++;
 		}
 
@@ -470,7 +478,7 @@ public class Display extends Activity {
 		return dest;
 	}
 
-	private String QueryYahooNews() {
+	private String queryNews() {
 
 		String qResult = "";
 		String queryString = rss;
@@ -502,6 +510,49 @@ public class Display extends Activity {
 		}
 
 		return qResult;
+	}
+
+	public String windDir(String deg) {
+		String dir = null;
+		InputStream inputStream = null;
+		String finalDIR = null;
+		JSONObject jObject;
+		JSONArray direction;
+		JSONObject jo;
+
+		String confAPI = lastIntent.getStringExtra("URL")
+				+ "/api.php?kind=wind&deg=" + deg;
+		ArrayList<NameValuePair> param = new ArrayList<NameValuePair>();
+		try {
+
+			HttpClient httpClient = new DefaultHttpClient();
+			HttpPost httpPost = new HttpPost(confAPI);
+			httpPost.setEntity(new UrlEncodedFormEntity(param));
+			HttpResponse httpResponse = httpClient.execute(httpPost);
+			HttpEntity httpEntity = httpResponse.getEntity();
+			inputStream = httpEntity.getContent();
+
+			BufferedReader bReader = new BufferedReader(new InputStreamReader(
+					inputStream, "iso-8859-1"), 8);
+			StringBuilder sBuilder = new StringBuilder();
+
+			String line = null;
+			while ((line = bReader.readLine()) != null) {
+				sBuilder.append(line + "\n");
+			}
+
+			dir = sBuilder.toString();
+			jObject = new JSONObject(dir);
+			direction = jObject.getJSONArray("Direction");
+			finalDIR = direction.toString().replaceAll("\"", "");
+			finalDIR = finalDIR.replace("[", "");
+			finalDIR = finalDIR.replace("]", "");
+			System.out.println("Debug: Wind direction is " + finalDIR);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return finalDIR;
 	}
 
 	private Weather parseWeather(Document srcDoc) {
@@ -543,8 +594,9 @@ public class Display extends Activity {
 		Node windNode = srcDoc.getElementsByTagName("yweather:wind").item(0);
 		myWeather.windChill = windNode.getAttributes().getNamedItem("chill")
 				.getNodeValue().toString();
-		myWeather.windDirection = windNode.getAttributes()
-				.getNamedItem("direction").getNodeValue().toString();
+
+		myWeather.windDirection = windDir(windNode.getAttributes()
+				.getNamedItem("direction").getNodeValue().toString());
 		myWeather.windSpeed = windNode.getAttributes().getNamedItem("speed")
 				.getNodeValue().toString();
 
@@ -635,7 +687,7 @@ public class Display extends Activity {
 		bgThread = new Thread(new Runnable() {
 			public void run() {
 				while (visible == 1) {
-					weatherString = QueryYahooWeather();
+					weatherString = queryWeather();
 					weatherDoc = convertStringToDocument(weatherString);
 					final Weather weatherResult = parseWeather(weatherDoc);
 					runOnUiThread(new Runnable() {
@@ -686,7 +738,7 @@ public class Display extends Activity {
 		rssThread = new Thread(new Runnable() {
 			public void run() {
 				while (visible == 1) {
-					newsString = QueryYahooNews();
+					newsString = queryNews();
 					newsDoc = convertNewsStringToDocument(newsString);
 					final News newsResult = parseNews(newsDoc);
 					runOnUiThread(new Runnable() {
@@ -733,7 +785,7 @@ public class Display extends Activity {
 		wpThread.start();
 	}
 
-	private String QueryYahooWeather() {
+	private String queryWeather() {
 
 		String qResult = "";
 		String queryString = getResources().getString(R.string.yahooWeatherAPI)

@@ -226,9 +226,12 @@ public class PickConf extends Activity implements OnClickListener {
 				Intent i = new Intent(mContext, Display.class);
 				i.putExtra("CONF", selectedConf);
 				i.putExtra("URL", lastIntent.getStringExtra("url"));
+				zipCode = "03060";
 				if (zipCode != null) {
+					System.out.println(zipCode);
 					i.putExtra("ZIP", zipCode);
 				}
+
 				startActivity(i);
 			}
 			break;
@@ -327,9 +330,7 @@ public class PickConf extends Activity implements OnClickListener {
 				}
 				mNextButt.setEnabled(true);
 			} catch (JSONException e) {
-
 				e.printStackTrace();
-
 			}
 			// Set our last selection as the current selection.
 			if (prefs.getString("ID", "") != null) {
