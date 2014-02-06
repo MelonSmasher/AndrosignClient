@@ -438,16 +438,14 @@ public class Display extends Activity {
 
 	private News parseNews(Document srcDoc) {
 		News myNews = new News();
-
-		myNews.headline = "\t\t\t\t" + "Latest Headlines:" + "\t\t\t\t"
-				+ srcDoc.getElementsByTagName("title").item(2).getTextContent()
-				+ "\t\t\t\t"
-				+ srcDoc.getElementsByTagName("title").item(3).getTextContent()
-				+ "\t\t\t\t"
-				+ srcDoc.getElementsByTagName("title").item(4).getTextContent()
-				+ "\t\t\t\t"
-				+ srcDoc.getElementsByTagName("title").item(5).getTextContent()
-				+ "\t\t\t\t";
+		int i = 0;
+		System.out.println(String.valueOf("Debug: Number of Headlines is " + srcDoc.getElementsByTagName("title").getLength() + "."));
+		myNews.headline = "\t\t\t\t";
+		// Iterate over titles and get total number and display that many.
+		while (i < srcDoc.getElementsByTagName("title").getLength()) {
+			myNews.headline = myNews.headline + srcDoc.getElementsByTagName("title").item(i).getTextContent() + "\t\t\t\t";
+			i++;
+		}
 
 		return myNews;
 	}
