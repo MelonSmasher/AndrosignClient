@@ -2,6 +2,7 @@ AndrosignClient
 ===============
 
 Signage Client for Android that utilizes a web based [CMS Server](https://github.com/MelonSmasher/AndrosignServer).
+Also note this app will be useless without the [CMS server](https://github.com/MelonSmasher/AndrosignServer)!
 
 ![alt tag](http://i.imgur.com/7SgSIGX.png)
 
