@@ -566,7 +566,8 @@ public class Display extends Activity {
 				+ ": "
 				+ forecastNode1.getAttributes().getNamedItem("high")
 						.getNodeValue().toString()
-				+ (char) 0x00B0 + "F "
+				+ (char) 0x00B0
+				+ "F "
 				+ forecastNode1.getAttributes().getNamedItem("text")
 						.getNodeValue().toString() + "\n";
 
@@ -579,7 +580,8 @@ public class Display extends Activity {
 				+ ": "
 				+ forecastNode2.getAttributes().getNamedItem("high")
 						.getNodeValue().toString()
-				+ (char) 0x00B0 + "F "
+				+ (char) 0x00B0
+				+ "F "
 				+ forecastNode2.getAttributes().getNamedItem("text")
 						.getNodeValue().toString() + "\n";
 
@@ -592,7 +594,8 @@ public class Display extends Activity {
 				+ ": "
 				+ forecastNode3.getAttributes().getNamedItem("high")
 						.getNodeValue().toString()
-				+ (char) 0x00B0 + "F "
+				+ (char) 0x00B0
+				+ "F "
 				+ forecastNode3.getAttributes().getNamedItem("text")
 						.getNodeValue().toString() + "\n";
 
@@ -605,7 +608,8 @@ public class Display extends Activity {
 				+ ": "
 				+ forecastNode4.getAttributes().getNamedItem("high")
 						.getNodeValue().toString()
-				+ (char) 0x00B0 + "F "
+				+ (char) 0x00B0
+				+ "F "
 				+ forecastNode4.getAttributes().getNamedItem("text")
 						.getNodeValue().toString() + "\n";
 
@@ -618,7 +622,8 @@ public class Display extends Activity {
 				+ ": "
 				+ forecastNode5.getAttributes().getNamedItem("high")
 						.getNodeValue().toString()
-				+ (char) 0x00B0 + "F "
+				+ (char) 0x00B0
+				+ "F "
 				+ forecastNode5.getAttributes().getNamedItem("text")
 						.getNodeValue().toString() + "\n";
 
@@ -734,7 +739,7 @@ public class Display extends Activity {
 
 		String qResult = "";
 		String queryString = getResources().getString(R.string.yahooWeatherAPI)
-				.toString() + "2508215";
+				.toString() + lastIntent.getStringExtra("ZIP");
 
 		HttpClient httpClient = new DefaultHttpClient();
 		HttpGet httpGet = new HttpGet(queryString);

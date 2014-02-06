@@ -1,11 +1,14 @@
 package com.almyz125.androsign.config;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -20,13 +23,20 @@ import org.json.JSONObject;
 
 import com.almyz125.androsign.Display;
 import com.almyz125.androsign.R;
+import com.almyz125.androsign.config.MyLocation.LocationResult;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
@@ -50,11 +60,14 @@ public class PickConf extends Activity implements OnClickListener {
 	private ArrayAdapter<String> spinnerAdapter;
 	private JSONArray configs;
 	private Intent lastIntent;
+	private Location loc;
+	private List<Address> addresses;
+	private double lat, lng;
 	private SharedPreferences prefs;
 	private Editor prefsEditor;
-	private String selID, selectedConf;
+	private String selID, selectedConf, zipCode = null;
 	private LinearLayout statusLayout;
-	private ProgressDialog pd;
+	private ProgressDialog pd, pDialog;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -108,7 +121,11 @@ public class PickConf extends Activity implements OnClickListener {
 						tvRotation.setText("Rotation: " + rotation);
 						tvTransition.setText("Transition Time: " + transition
 								+ " (sec)");
-
+						if (isNetworkAvailable()) {
+							if (!weather.contentEquals("false")) {
+								getLoc();
+							}
+						}
 						selectedConf = configs.get(position).toString();
 
 						statusLayout.setVisibility(View.VISIBLE);
@@ -128,6 +145,56 @@ public class PickConf extends Activity implements OnClickListener {
 		mContext = PickConf.this;
 		confTask = new ConfigsTask();
 		confTask.execute(mContext);
+	}
+
+	public void getLoc() {
+		if (pDialog != null) {
+			pDialog.dismiss();
+		}
+		pDialog = new ProgressDialog(mContext);
+		pDialog.setMessage("Getting location for weather...");
+		pDialog.setIndeterminate(true);
+		pDialog.setCancelable(false);
+		pDialog.show();
+		LocationResult locationResult = new LocationResult() {
+			@Override
+			public void gotLocation(Location location) {
+				loc = location;
+				lat = loc.getLatitude();
+				lng = loc.getLongitude();
+				// after we get a lat an lng lets get an address from it
+				new GetGeoInfo().execute("");
+			}
+		};
+		MyLocation myLocation = new MyLocation();
+		myLocation.getLocation(mContext, locationResult);
+	}
+
+	private class GetGeoInfo extends AsyncTask<String, Void, String> {
+		@SuppressLint("DefaultLocale")
+		@Override
+		protected String doInBackground(String... params) {
+
+			try {
+				// get location info and form url
+				Geocoder geocoder = new Geocoder(mContext, Locale.getDefault());
+				addresses = geocoder.getFromLocation(lat, lng, 1);
+				zipCode = addresses.get(0).getPostalCode().toString();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return "Done";
+		}
+
+		@Override
+		protected void onPostExecute(String result) {
+			if (pDialog != null) {
+				pDialog.dismiss();
+			}
+		}
 	}
 
 	public String myDecode(String s) {
@@ -159,6 +226,9 @@ public class PickConf extends Activity implements OnClickListener {
 				Intent i = new Intent(mContext, Display.class);
 				i.putExtra("CONF", selectedConf);
 				i.putExtra("URL", lastIntent.getStringExtra("url"));
+				if (zipCode != null) {
+					i.putExtra("ZIP", zipCode);
+				}
 				startActivity(i);
 			}
 			break;
@@ -178,6 +248,13 @@ public class PickConf extends Activity implements OnClickListener {
 			mNextButt.setEnabled(true);
 		}
 		super.onDestroy();
+	}
+
+	private boolean isNetworkAvailable() {
+		ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo activeNetworkInfo = connectivityManager
+				.getActiveNetworkInfo();
+		return activeNetworkInfo != null && activeNetworkInfo.isConnected();
 	}
 
 	protected class ConfigsTask extends AsyncTask<Context, Integer, String> {
