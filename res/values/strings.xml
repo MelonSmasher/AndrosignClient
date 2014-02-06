@@ -8,5 +8,6 @@
     <string name="placeHolder">empty</string>
     <string name="contentDesc">desc</string>
     <string name="strClock">DigitalClock</string>
+    <string name="yahooWeatherAPI">http://weather.yahooapis.com/forecastrss?w=</string>
 
 </resources>

@@ -73,7 +73,7 @@ public class Display extends Activity {
 	private String baseURL, apiURL, confSTR, user, weather, clock, rss,
 			watermark, webcontent, rotation, transition; // , name, id;
 	private DigitalClock digClock;
-	private int weatherImg, currentCode;
+	private int weatherImg;
 	private String newsString, forecast, weatherString;
 	private Document newsDoc, weatherDoc;
 	private Toast toast;
@@ -507,7 +507,7 @@ public class Display extends Activity {
 	}
 
 	private Weather parseWeather(Document srcDoc) {
-
+		int currentCode;
 		Weather myWeather = new Weather();
 
 		// <description>Yahoo! Weather for New York, NY</description>
@@ -539,7 +539,7 @@ public class Display extends Activity {
 						.getAttributes().getNamedItem("code").getNodeValue()
 						.toString());
 		System.out.println("Debug: Weather code is " + currentCode + ".");
-		setWeatherIcon();
+		setWeatherIcon(currentCode);
 
 		// <yweather:wind.../>
 		Node windNode = srcDoc.getElementsByTagName("yweather:wind").item(0);
@@ -566,7 +566,7 @@ public class Display extends Activity {
 				+ ": "
 				+ forecastNode1.getAttributes().getNamedItem("high")
 						.getNodeValue().toString()
-				+ "°F "
+				+ "��F "
 				+ forecastNode1.getAttributes().getNamedItem("text")
 						.getNodeValue().toString() + "\n";
 
@@ -579,7 +579,7 @@ public class Display extends Activity {
 				+ ": "
 				+ forecastNode2.getAttributes().getNamedItem("high")
 						.getNodeValue().toString()
-				+ "°F "
+				+ "��F "
 				+ forecastNode2.getAttributes().getNamedItem("text")
 						.getNodeValue().toString() + "\n";
 
@@ -592,7 +592,7 @@ public class Display extends Activity {
 				+ ": "
 				+ forecastNode3.getAttributes().getNamedItem("high")
 						.getNodeValue().toString()
-				+ "°F "
+				+ "��F "
 				+ forecastNode3.getAttributes().getNamedItem("text")
 						.getNodeValue().toString() + "\n";
 
@@ -605,7 +605,7 @@ public class Display extends Activity {
 				+ ": "
 				+ forecastNode4.getAttributes().getNamedItem("high")
 						.getNodeValue().toString()
-				+ "°F "
+				+ "��F "
 				+ forecastNode4.getAttributes().getNamedItem("text")
 						.getNodeValue().toString() + "\n";
 
@@ -618,7 +618,7 @@ public class Display extends Activity {
 				+ ": "
 				+ forecastNode5.getAttributes().getNamedItem("high")
 						.getNodeValue().toString()
-				+ "°F "
+				+ "��F "
 				+ forecastNode5.getAttributes().getNamedItem("text")
 						.getNodeValue().toString() + "\n";
 
@@ -733,7 +733,8 @@ public class Display extends Activity {
 	private String QueryYahooWeather() {
 
 		String qResult = "";
-		String queryString = "http://weather.yahooapis.com/forecastrss?w=2508215";
+		String queryString = getResources().getString(R.string.yahooWeatherAPI)
+				.toString() + "2508215";
 
 		HttpClient httpClient = new DefaultHttpClient();
 		HttpGet httpGet = new HttpGet(queryString);
@@ -765,153 +766,125 @@ public class Display extends Activity {
 	}
 
 	// use our icons based on yahoo weather code.
-	public void setWeatherIcon() {
-		if (currentCode == 0) {
+	public void setWeatherIcon(int currentCode) {
+		// using switch-case fall through to keep things short and neat.
+		switch (currentCode) {
+		// t-storm 3
+		case 0:
+		case 1:
+		case 2:
+		case 3:
+		case 4:
 			weatherImg = R.drawable.tstorm3;
-		}
-		if (currentCode == 1) {
-			weatherImg = R.drawable.tstorm3;
-		}
-		if (currentCode == 2) {
-			weatherImg = R.drawable.tstorm3;
-		}
-		if (currentCode == 3) {
-			weatherImg = R.drawable.tstorm3;
-		}
-		if (currentCode == 4) {
-			weatherImg = R.drawable.tstorm3;
-		}
-		if (currentCode == 5) {
+			break;
+		// sleet
+		case 5:
+		case 6:
+		case 7:
+		case 8:
+		case 10:
+		case 18:
 			weatherImg = R.drawable.sleet;
-		}
-		if (currentCode == 6) {
-			weatherImg = R.drawable.sleet;
-		}
-		if (currentCode == 7) {
-			weatherImg = R.drawable.sleet;
-		}
-		if (currentCode == 8) {
-			weatherImg = R.drawable.sleet;
-		}
-		if (currentCode == 9) {
+			break;
+		// light rain
+		case 9:
 			weatherImg = R.drawable.light_rain;
-		}
-		if (currentCode == 10) {
-			weatherImg = R.drawable.sleet;
-		}
-		if (currentCode == 11) {
+			break;
+		// shower 3
+		case 11:
+		case 12:
 			weatherImg = R.drawable.shower3;
-		}
-		if (currentCode == 12) {
-			weatherImg = R.drawable.shower3;
-		}
-		if (currentCode == 13) {
+			break;
+		// snow 4
+		case 13:
+		case 14:
+		case 15:
+		case 46:
 			weatherImg = R.drawable.snow4;
-		}
-		if (currentCode == 14) {
-			weatherImg = R.drawable.snow4;
-		}
-		if (currentCode == 15) {
-			weatherImg = R.drawable.snow4;
-		}
-		if (currentCode == 16) {
+			break;
+		// snow 5
+		case 16:
 			weatherImg = R.drawable.snow5;
-		}
-		if (currentCode == 17) {
+			break;
+		// hail
+		case 17:
+		case 35:
 			weatherImg = R.drawable.hail;
-		}
-		if (currentCode == 18) {
-			weatherImg = R.drawable.sleet;
-		}
-		if (currentCode == 19) {
+			break;
+		// mist
+		case 19:
+		case 21:
 			weatherImg = R.drawable.mist;
-		}
-		if (currentCode == 20) {
+			break;
+		// fog
+		case 20:
+		case 22:
 			weatherImg = R.drawable.fog;
-		}
-		if (currentCode == 21) {
-			weatherImg = R.drawable.mist;
-		}
-		if (currentCode == 22) {
-			weatherImg = R.drawable.fog;
-		}
-		if (currentCode == 23) {
+			break;
+		// sunny
+		case 23:
+		case 24:
+		case 25:
+		case 32:
+		case 34:
+		case 36:
 			weatherImg = R.drawable.sunny;
-		}
-		if (currentCode == 24) {
-			weatherImg = R.drawable.sunny;
-		}
-		if (currentCode == 25) {
-			weatherImg = R.drawable.sunny;
-		}
-		if (currentCode == 26) {
+			break;
+		// overcast
+		case 26:
 			weatherImg = R.drawable.overcast;
-		}
-		if (currentCode == 27) {
+			break;
+		// cloudy 4 night
+		case 27:
 			weatherImg = R.drawable.cloudy4_night;
-		}
-		if (currentCode == 28) {
+			break;
+		// cloudy 4
+		case 28:
 			weatherImg = R.drawable.cloudy4;
-		}
-		if (currentCode == 29) {
+			break;
+		// cloudy 1 night
+		case 29:
 			weatherImg = R.drawable.cloudy1_night;
-		}
-		if (currentCode == 30) {
+			break;
+		// cloudy 1
+		case 30:
 			weatherImg = R.drawable.cloudy1;
-		}
-		if (currentCode == 31) {
+			break;
+		// suny night
+		case 31:
+		case 33:
 			weatherImg = R.drawable.sunny_night;
-		}
-		if (currentCode == 32) {
-			weatherImg = R.drawable.sunny;
-		}
-		if (currentCode == 33) {
-			weatherImg = R.drawable.sunny_night;
-		}
-		if (currentCode == 34) {
-			weatherImg = R.drawable.sunny;
-		}
-		if (currentCode == 35) {
-			weatherImg = R.drawable.hail;
-		}
-		if (currentCode == 36) {
-			weatherImg = R.drawable.sunny;
-		}
-		if (currentCode == 37) {
+			break;
+		// tstorm 2
+		case 37:
+		case 38:
+		case 39:
+		case 45:
+		case 47:
 			weatherImg = R.drawable.tstorm2;
-		}
-		if (currentCode == 38) {
-			weatherImg = R.drawable.tstorm2;
-		}
-		if (currentCode == 39) {
-			weatherImg = R.drawable.tstorm2;
-		}
-		if (currentCode == 40) {
+			break;
+		// shower 1
+		case 40:
 			weatherImg = R.drawable.shower1;
-		}
-		if (currentCode == 41) {
+			break;
+		// snow 5
+		case 41:
+		case 43:
 			weatherImg = R.drawable.snow5;
-		}
-		if (currentCode == 42) {
+			break;
+		// snow 3
+		case 42:
 			weatherImg = R.drawable.snow3;
-		}
-		if (currentCode == 43) {
-			weatherImg = R.drawable.snow5;
-		}
-		if (currentCode == 44) {
+			break;
+		// cloudy 2
+		case 44:
 			weatherImg = R.drawable.cloudy2;
-		}
-		if (currentCode == 45) {
-			weatherImg = R.drawable.tstorm2;
-		}
-		if (currentCode == 46) {
-			weatherImg = R.drawable.snow4;
-		}
-		if (currentCode == 47) {
-			weatherImg = R.drawable.tstorm2;
-		}
-		if (currentCode == 3200) {
+			break;
+		// not sure
+		case 3200:
 			weatherImg = R.drawable.dunno;
+			break;
+
 		}
 	}
 
