@@ -547,6 +547,7 @@ public class Display extends Activity {
 			dir = sBuilder.toString();
 			jObject = new JSONObject(dir);
 			direction = jObject.getJSONArray("Direction");
+			// The next few lines are slop. I need to change this to use the JSON parser...
 			finalDIR = direction.toString().replaceAll("\"", "");
 			finalDIR = finalDIR.replace("[", "");
 			finalDIR = finalDIR.replace("]", "");
