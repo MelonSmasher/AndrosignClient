@@ -368,6 +368,8 @@ public class Display extends Activity {
 			try {
 				picasso.load(urls.get(choice))
 						.rotate(Integer.valueOf(rotation)).into(iv);
+				System.out.println("Debug: Wallpaper url is "
+						+ urls.get(choice));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -376,6 +378,8 @@ public class Display extends Activity {
 			try {
 				picasso.load(urls.get(choice))
 						.rotate(Integer.valueOf(rotation)).into(iv);
+				System.out.println("Debug: Wallpaper url is "
+						+ urls.get(choice));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -518,7 +522,6 @@ public class Display extends Activity {
 		String finalDIR = null;
 		JSONObject jObject;
 		JSONArray direction;
-		JSONObject jo;
 
 		String confAPI = lastIntent.getStringExtra("URL")
 				+ "/api.php?kind=wind&deg=" + deg;
